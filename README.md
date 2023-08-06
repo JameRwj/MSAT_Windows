@@ -1,5 +1,5 @@
 # MSAT
-MSAT aims to provide a helpful tool to quantitatively analyze the shock instability problem for the second-order finite-volume MUSCL schemes. Detailed information about the matrix stability analysis method can be found in the following: 
+MSAT aims to provide a helpful tool to quantitatively analyze the shock instability problem for the schemes with three-point stencils. Detailed information about the matrix stability analysis method can be found in the following: 
  - [M. Dumbser, J.-M. Moschetta, J. Gressier, A matrix stability analysis of the carbuncle phenomenon, Journal of Computational Physics 197 (2) (2004) 647–670](https://doi.org/10.1016/j.jcp.2003.12.013)
  - [W.Ren,W.Xie,Y.Zhang,H.Yu,Z.Tian,Numerical stability analysis of shock- capturing methods for strong shocks i:second-order muscl schemes (2023)](https://arxiv.org/abs/2305.03281)
 
@@ -22,11 +22,16 @@ Note that MSAT is written in Fortran and uses MKL to calculate the eigenvalues a
 ## Settings.dat
 The main settings of the MSAT are stored in *Settings.dat*, including:
 
+- The reconstruction method used in MAST:
+		1. MUSCL;
+		2. ROUND.
+
  - The limiter function used in the MUSCL approach. The correspondence between the number and the limiter function is:
 		 1. Superbee limiter;
 		 2. van Leer limiter;
 		 3. van Albada limiter;
 		 4. minmod limiter;
+		 5. the limiter proposed by Xi Deng in  [X.Deng, A unificd framework for non-linear reconstruction schemes in a compact stencil. Part 1: Beyond second order, Journal of Computational Physics 481 (2023) 112052](https://doi.org/10.1016/j.jcp.2023.112052) ;
 	And it will be first-order accurate if choose 0.
 	
  - The Riemann solver used in MSAT. The correspondence between the number and the Riemann solver is:

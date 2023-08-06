@@ -1,10 +1,10 @@
     SUBROUTINE Information_Write()
-    USE BasicData,ONLY : Limiter,Riemann_Solver,Mainf,epsilon,id,jd,Initialization_Method,TestCase
+    USE BasicData,ONLY : Limiter,Riemann_Solver,Mainf,epsilon,id,jd,Initialization_Method,TestCase,Reconstruction_Method
 
     IMPLICIT NONE
 
     CHARACTER*50 :: CharTemp1,CharTemp2
-    CHARACTER*100:: CharGrid,CharLimiter,CharSolver,CharInitialization,CharTestCase
+    CHARACTER*100:: CharGrid,CharLimiter,CharSolver,CharInitialization,CharTestCase,CharReconstruction
     INTEGER :: key,error
 
     WRITE(CharTemp1,*)id-1
@@ -13,6 +13,16 @@
 
     error = 0
     
+    SELECT CASE (Reconstruction_Method)   
+    CASE(1)
+        CharReconstruction = "MUSCL"
+    CASE(2)
+        CharReconstruction = "ROUND"
+    CASE DEFAULT
+        CharReconstruction = "Warning! The reconstruction method is wrong"
+        error = 1
+    END SELECT
+        
     SELECT CASE (Limiter)
     CASE (0)
         CharLimiter = "No Limiter (First Order)"
@@ -24,6 +34,8 @@
         CharLimiter = "van Albada Limiter"
     CASE (4)
         CharLimiter = "minmod Limiter"
+    CASE (5)
+        CharLimiter = "Limiter of Deng Xi"
     CASE DEFAULT
         CharLimiter = "Warning! The limiter is wrong"
         error = 1
@@ -74,8 +86,12 @@
     WRITE(*,"(A80)")"===============================Computation Settings==============================="
     WRITE(*,"(A35,A60)")"The computational grid is:         " , CharGrid
     WRITE(*,*)
-    WRITE(*,"(A35,A60)")"The used limiter is:               " , CharLimiter
+    WRITE(*,"(A35,A60)")"The reconstruction method is:      " , CharReconstruction
     WRITE(*,*)
+    IF (Reconstruction_Method == 1) THEN
+        WRITE(*,"(A35,A60)")"The used limiter is:               " , CharLimiter
+        WRITE(*,*)
+    END IF
     WRITE(*,"(A35,A60)")"The used Riemann solver is:        " , CharSolver
     WRITE(*,*)
     WRITE(*,"(A35,A60)")"The test case is:                  " , CharTestCase

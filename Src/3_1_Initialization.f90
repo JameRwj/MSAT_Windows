@@ -139,7 +139,6 @@
                     p(i,j)   = p(i,j)
                 END DO
             END DO
-            DEALLOCATE(rho_1D,u_1D,p_1D)
         END SELECT
 
     CASE(2)

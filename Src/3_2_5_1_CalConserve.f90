@@ -18,5 +18,9 @@
     IF (factor==1) THEN
         qq(2,ii+1)=qq(2,ii-1)
     END IF
+    !IF (factor == 2) THEN
+    !    qq(2,ii+2)=qq(2,ii-1)
+    !END IF
+    
 
     END SUBROUTINE CalConserv
