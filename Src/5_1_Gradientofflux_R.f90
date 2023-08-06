@@ -1,15 +1,18 @@
-    SUBROUTINE Gradientofflux_R(i,j,Face,nx,ny,R,faiR)
-    USE BasicData,ONLY:p2,rho,u,v,p,zero,two
+    SUBROUTINE Gradientofflux_R(i,j,Face,nx,ny,R,faiR_1,faiR_2,faiR_3)
+    USE BasicData,ONLY:p2,rho,u,v,p,zero,two,Reconstruction_Method
     
     IMPLICIT NONE
 
     INTEGER i,j,Face,m,n
-    REAL(p2),DIMENSION(4,4) :: R,faiR
+    REAL(p2),DIMENSION(4,4) :: R,faiR_1,faiR_2,faiR_3
     REAL(p2),DIMENSION(4) :: flux1_plus ,flux2_plus ,flux3_plus ,flux4_plus
     REAL(p2),DIMENSION(4) :: flux1_minus,flux2_minus,flux3_minus,flux4_minus
     REAL(p2),DIMENSION(4) :: UL,UR
 
-    REAL(p2) :: faiL1,faiL2,faiL3,faiL4,faiR1,faiR2,faiR3,faiR4
+    REAL(p2) :: faiL1_1,faiL2_1,faiL3_1,faiL4_1,faiR1_1,faiR2_1,faiR3_1,faiR4_1
+    REAL(p2) :: faiL1_2,faiL2_2,faiL3_2,faiL4_2,faiR1_2,faiR2_2,faiR3_2,faiR4_2
+    REAL(p2) :: faiL1_3,faiL2_3,faiL3_3,faiL4_3,faiR1_3,faiR2_3,faiR3_3,faiR4_3
+    
     REAL(p2) :: UL1,UL2,UL3,UL4,UR1,UR2,UR3,UR4
     REAL(p2) :: delta,deltaL,deltaR
     REAL(p2) :: nx,ny
@@ -18,15 +21,15 @@
     delta = 1.0E-7_p2
 
     !===========÷ÿππ===========
-    CALL Reconstruct_L(i,j,rho,Face,faiL1,UL1)
-    CALL Reconstruct_L(i,j,u,  Face,faiL2,UL2)
-    CALL Reconstruct_L(i,j,v,  Face,faiL3,UL3)
-    CALL Reconstruct_L(i,j,p,  Face,faiL4,UL4)
+    CALL Reconstruct_L(i,j,rho,Face,faiL1_1,faiL1_2,faiL1_3,UL1)
+    CALL Reconstruct_L(i,j,u,  Face,faiL2_1,faiL2_2,faiL2_3,UL2)
+    CALL Reconstruct_L(i,j,v,  Face,faiL3_1,faiL3_2,faiL3_3,UL3)
+    CALL Reconstruct_L(i,j,p,  Face,faiL4_1,faiL4_2,faiL4_3,UL4)
                                          
-    CALL Reconstruct_R(i,j,rho,Face,faiR1,UR1)
-    CALL Reconstruct_R(i,j,u,  Face,faiR2,UR2)
-    CALL Reconstruct_R(i,j,v,  Face,faiR3,UR3)
-    CALL Reconstruct_R(i,j,p,  Face,faiR4,UR4)
+    CALL Reconstruct_R(i,j,rho,Face,faiR1_1,faiR1_2,faiR1_3,UR1)
+    CALL Reconstruct_R(i,j,u,  Face,faiR2_1,faiR2_2,faiR2_3,UR2)
+    CALL Reconstruct_R(i,j,v,  Face,faiR3_1,faiR3_2,faiR3_3,UR3)
+    CALL Reconstruct_R(i,j,p,  Face,faiR4_1,faiR4_2,faiR4_3,UR4)
 
     deltaL = zero
     deltaR = delta
@@ -119,9 +122,30 @@
         END DO
     END IF
 
-    faiR(1,1) = faiR1
-    faiR(2,2) = faiR2
-    faiR(3,3) = faiR3
-    faiR(4,4) = faiR4
+    SELECT CASE(Reconstruction_Method)
+    CASE (1)   
+        faiR_1(1,1) = faiR1_1
+        faiR_1(2,2) = faiR2_1
+        faiR_1(3,3) = faiR3_1
+        faiR_1(4,4) = faiR4_1
+        
+        faiR_2 = zero
+        faiR_3 = zero
+    CASE (2)
+        faiR_1(1,1) = faiR1_1
+        faiR_1(2,2) = faiR2_1
+        faiR_1(3,3) = faiR3_1
+        faiR_1(4,4) = faiR4_1
+ 
+        faiR_2(1,1) = faiR1_2
+        faiR_2(2,2) = faiR2_2
+        faiR_2(3,3) = faiR3_2
+        faiR_2(4,4) = faiR4_2
+
+        faiR_3(1,1) = faiR1_3
+        faiR_3(2,2) = faiR2_3
+        faiR_3(3,3) = faiR3_3
+        faiR_3(4,4) = faiR4_3
+    END SELECT
 
     END SUBROUTINE Gradientofflux_R

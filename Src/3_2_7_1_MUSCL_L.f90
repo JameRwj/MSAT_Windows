@@ -1,4 +1,4 @@
-    SUBROUTINE MUSCL_L(i,variableL,variable)
+    SUBROUTINE MUSCL_L_1D(i,variableL,variable)
 
     USE BasicData ,ONLY: p2,id,ghostLayers
 
@@ -14,4 +14,5 @@
     delta_minus=variable(i-1)-variable(i-2)
     CALL Limiter_function(delta_plus,delta_minus,delta,fai)
     variableL=variable(i-1)+delta
-    END SUBROUTINE MUSCL_L
+    
+    END SUBROUTINE MUSCL_L_1D

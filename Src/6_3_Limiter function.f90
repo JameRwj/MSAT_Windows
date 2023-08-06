@@ -21,22 +21,28 @@
     
     SELECT CASE(Limiter)
     CASE(0)		!no limiter
-        delta=zero
-        psi=zero
+        delta = zero
+        psi   = zero
     CASE(1)		!superbee
-        psi=MAX(MIN(two*r,one),MIN(r,two))
-        psi=MAX(zero,psi)
-        delta=half*psi*delta_minus
+        psi   = MAX(MIN(two*r,one),MIN(r,two))
+        psi   = MAX(zero,psi)
+        delta = half*psi*delta_minus
     CASE(2)		!van Leer
-        psi=(r+ABS(r))/(one+ABS(r))
-        delta=half*psi*delta_minus
-
+        psi   = (r+ABS(r))/(one+ABS(r))
+        delta = half*psi*delta_minus
     CASE(3)		!van Albada
-        psi=(r*r+r)/(one+r*r)
-        delta=half*psi*delta_minus
+        psi   = (r*r+r)/(one+r*r)
+        delta = half*psi*delta_minus
     CASE(4)		!minmod
-        psi=MAX(MIN(r,one),zero)
-        delta=half*psi*delta_minus
+        psi   = MAX(MIN(r,one),zero)
+        delta = half*psi*delta_minus
+    CASE(5)     !From the paper of Deng Xi in JCP
+        IF (r >= zero) THEN
+            psi   = (two*r+two*two*r**2)/(one+two*r+3.0_p2*r**2)
+        ELSE
+            psi = zero
+        END IF
+        delta = half*psi*delta_minus
     END SELECT
     fai = half*psi
 

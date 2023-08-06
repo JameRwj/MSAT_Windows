@@ -2,8 +2,10 @@
 
     INTEGER,PARAMETER :: p2 = SELECTED_REAL_KIND(P=15) !P=15 Double precision; p=6 is single precision
 
+    CHARACTER*50 :: GridName
+    
     INTEGER :: id,jd  
-    INTEGER :: Limiter,Riemann_Solver,Initialization_Method,TestCase
+    INTEGER :: Limiter,Riemann_Solver,Initialization_Method,TestCase,Reconstruction_Method
     
     REAL(p2):: epsilon,Mainf
     

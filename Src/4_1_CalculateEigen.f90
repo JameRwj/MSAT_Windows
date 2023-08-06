@@ -1,6 +1,5 @@
     SUBROUTINE CalculateEigen()
     USE BasicData
-    !USE LAPACK95
     
     IMPLICIT NONE
     
@@ -11,8 +10,12 @@
     INTEGER  :: col,row,n,i,j
     INTEGER  :: N_Matrix,INFO,LDA,LDVL,LDVR,LWORK
 
-    REAL(p2),DIMENSION(4,4) :: faiL1,faiL2,faiL3,faiL4
-    REAL(p2),DIMENSION(4,4) :: faiR1,faiR2,faiR3,faiR4
+    REAL(p2),DIMENSION(4,4) :: faiL1_1,faiL2_1,faiL3_1,faiL4_1
+    REAL(p2),DIMENSION(4,4) :: faiR1_1,faiR2_1,faiR3_1,faiR4_1
+    REAL(p2),DIMENSION(4,4) :: faiL1_2,faiL2_2,faiL3_2,faiL4_2
+    REAL(p2),DIMENSION(4,4) :: faiR1_2,faiR2_2,faiR3_2,faiR4_2
+    REAL(p2),DIMENSION(4,4) :: faiL1_3,faiL2_3,faiL3_3,faiL4_3
+    REAL(p2),DIMENSION(4,4) :: faiR1_3,faiR2_3,faiR3_3,faiR4_3
     REAL(p2),DIMENSION(4,4) :: A1,A2,A3,A4
     REAL(p2),DIMENSION(4,4) :: B1,B2,B3,B4
     REAL(p2),DIMENSION(4,4) :: C1,C2,C3,C4
@@ -74,15 +77,15 @@
             len4 = SQRT(syx(i+0,j+0)**2+syy(i+0,j+0)**2)
             s    = vol(i,j)
             
-            CALL Gradientofflux_L(i,j,1,nx1,ny1,L1,faiL1)
-            CALL Gradientofflux_L(i,j,2,nx2,ny2,L2,faiL2)
-            CALL Gradientofflux_L(i,j,3,nx3,ny3,L3,faiL3)
-            CALL Gradientofflux_L(i,j,4,nx4,ny4,L4,faiL4)
+            CALL Gradientofflux_L(i,j,1,nx1,ny1,L1,faiL1_1,faiL1_2,faiL1_3)
+            CALL Gradientofflux_L(i,j,2,nx2,ny2,L2,faiL2_1,faiL2_2,faiL2_3)
+            CALL Gradientofflux_L(i,j,3,nx3,ny3,L3,faiL3_1,faiL3_2,faiL3_3)
+            CALL Gradientofflux_L(i,j,4,nx4,ny4,L4,faiL4_1,faiL4_2,faiL4_3)
                                        
-            CALL Gradientofflux_R(i,j,1,nx1,ny1,R1,faiR1)
-            CALL Gradientofflux_R(i,j,2,nx2,ny2,R2,faiR2)
-            CALL Gradientofflux_R(i,j,3,nx3,ny3,R3,faiR3)
-            CALL Gradientofflux_R(i,j,4,nx4,ny4,R4,faiR4)
+            CALL Gradientofflux_R(i,j,1,nx1,ny1,R1,faiR1_1,faiR1_2,faiR1_3)
+            CALL Gradientofflux_R(i,j,2,nx2,ny2,R2,faiR2_1,faiR2_2,faiR2_3)
+            CALL Gradientofflux_R(i,j,3,nx3,ny3,R3,faiR3_1,faiR3_2,faiR3_3)
+            CALL Gradientofflux_R(i,j,4,nx4,ny4,R4,faiR4_1,faiR4_2,faiR4_3)
             
             rho_ = rho(i,j)
             u_   = u(i,j)
@@ -94,21 +97,38 @@
                              zero , zero     , one/rho_ , -(gamma-one)*v_,&
                              zero , zero     , zero     , gamma-one] ,[4,4])
 
-            
-            A1=MATMUL(L1,(E+faiL1))*len1/s
-            A2=MATMUL(L2,(E+faiL2))*len2/s
-            A3=MATMUL(R3,(E+faiR3))*len3/s
-            A4=MATMUL(R4,(E+faiR4))*len4/s
-            
-            B1=(len1*MATMUL(R1,(E+faiR1))-len3*MATMUL(R3,faiR3))/s
-            B2=(len2*MATMUL(R2,(E+faiR2))-len4*MATMUL(R4,faiR4))/s
-            B3=(len3*MATMUL(L3,(E+faiL3))-len1*MATMUL(L1,faiL1))/s
-            B4=(len4*MATMUL(L4,(E+faiL4))-len2*MATMUL(L2,faiL2))/s
-            
-            C1=MATMUL(R1,faiR1)*len1/s
-            C2=MATMUL(R2,faiR2)*len2/s
-            C3=MATMUL(L3,faiL3)*len3/s
-            C4=MATMUL(L4,faiL4)*len4/s
+            SELECT CASE (Reconstruction_Method)
+            CASE(1)
+                A1 = MATMUL(L1,(E+faiL1_1)) * len1/s
+                A2 = MATMUL(L2,(E+faiL2_1)) * len2/s
+                A3 = MATMUL(R3,(E+faiR3_1)) * len3/s
+                A4 = MATMUL(R4,(E+faiR4_1)) * len4/s
+                
+                B1 = (len1*MATMUL(R1,(E+faiR1_1)) - len3*MATMUL(R3,faiR3_1)) / s
+                B2 = (len2*MATMUL(R2,(E+faiR2_1)) - len4*MATMUL(R4,faiR4_1)) / s
+                B3 = (len3*MATMUL(L3,(E+faiL3_1)) - len1*MATMUL(L1,faiL1_1)) / s
+                B4 = (len4*MATMUL(L4,(E+faiL4_1)) - len2*MATMUL(L2,faiL2_1)) / s
+                
+                C1 = MATMUL(R1,faiR1_1) * len1/s
+                C2 = MATMUL(R2,faiR2_1) * len2/s
+                C3 = MATMUL(L3,faiL3_1) * len3/s
+                C4 = MATMUL(L4,faiL4_1) * len4/s
+            CASE(2)
+                A1 = (MATMUL(L1,faiL1_2) + (MATMUL(R1,faiR1_1))) * len1/s
+                A2 = (MATMUL(L2,faiL2_2) + (MATMUL(R2,faiR2_1))) * len2/s
+                A3 = (MATMUL(L3,faiL3_1) + (MATMUL(R3,faiR3_2))) * len3/s
+                A4 = (MATMUL(L4,faiL4_1) + (MATMUL(R4,faiR4_2))) * len4/s
+                
+                B1 = (len1*(MATMUL(L1,(faiL1_1)) + MATMUL(R1,faiR1_2)) + len3*MATMUL(R3,faiR3_3)) / s
+                B2 = (len2*(MATMUL(L2,(faiL2_1)) + MATMUL(R2,faiR2_2)) + len4*MATMUL(R4,faiR4_3)) / s
+                B3 = (len3*(MATMUL(R3,(faiR3_1)) + MATMUL(L3,faiL3_2)) + len1*MATMUL(L1,faiL1_3)) / s
+                B4 = (len4*(MATMUL(R4,(faiR4_1)) + MATMUL(L4,faiL4_2)) + len2*MATMUL(L2,faiL2_3)) / s
+                
+                C1 = -MATMUL(R1,faiR1_3) * len1/s
+                C2 = -MATMUL(R2,faiR2_3) * len2/s
+                C3 = -MATMUL(L3,faiL3_3) * len3/s
+                C4 = -MATMUL(L4,faiL4_3) * len4/s
+            END SELECT
             
             A1 = MATMUL(dW_DU,A1)
             A2 = MATMUL(dW_DU,A2)
@@ -150,11 +170,11 @@
             END IF
             
             IF (j >= 3) THEN
-                Matrix(4*n-3:4*n,4*n-4*2*col-3:4*n-4*2*col)=C4
+                Matrix(4*n-3:4*n,4*n-4*2*col-3:4*n-4*2*col) = C4
             END IF
             
             IF (j <= row-2) THEN
-                Matrix(4*n-3:4*n,4*n+4*2*col-3:4*n+4*2*col)=C2
+                Matrix(4*n-3:4*n,4*n+4*2*col-3:4*n+4*2*col) = C2
             END IF
 
         END DO
