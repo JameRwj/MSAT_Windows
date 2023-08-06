@@ -1,11 +1,11 @@
     SUBROUTINE ReadGrid()
-    USE BasicData,ONLY:id,jd,x,y,sxx,sxy,sxMod,nxx,nxy,syx,syy,syMod,nyx,nyy,vol,half
+    USE BasicData,ONLY:id,jd,x,y,sxx,sxy,sxMod,nxx,nxy,syx,syy,syMod,nyx,nyy,vol,half,GridName
 
     IMPLICIT NONE
 
     INTEGER :: ni,nj,i,j
     
-    OPEN(104,FILE="Grid.dat")
+    OPEN(104,FILE=TRIM(ADJUSTL(GridName)))
     READ(104,*) ni,nj
     DO i = 1,id
         DO j = 1,jd

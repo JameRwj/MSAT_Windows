@@ -24,18 +24,18 @@
 
         !Step 1:	Define the left and right states of cell interface with MUSCL.
         !Left state
-        CALL MUSCL_L(i,rhoL,rho_1D)
+        CALL Reconstruction_L(i,rhoL,rho_1D)
 
-        CALL MUSCL_L(i,uL,u_1D)
+        CALL Reconstruction_L(i,uL,u_1D)
 
-        CALL MUSCL_L(i,pL,p_1D)
-
+        CALL Reconstruction_L(i,pL,p_1D)
+        
         !		Right state
-        CALL MUSCL_R(i,rhoR,rho_1D)
+        CALL Reconstruction_R(i,rhoR,rho_1D)
+        
+        CALL Reconstruction_R(i,uR,u_1D)
 
-        CALL MUSCL_R(i,uR,u_1D)
-
-        CALL MUSCL_R(i,pR,p_1D)
+        CALL Reconstruction_R(i,pR,p_1D)
 
         hL=(gamma/(gamma-one))*pL/rhoL+uL*uL/two
         hR=(gamma/(gamma-one))*pR/rhoR+uR*uR/two
